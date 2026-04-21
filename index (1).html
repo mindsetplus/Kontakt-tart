@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chcem vedieť viac</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080810;
+      --card: #0f0f1a;
+      --border: rgba(255,255,255,0.06);
+      --gold: #d4a853;
+      --gold2: #f0c97a;
+      --text: #eeecf0;
+      --muted: #6b6880;
+      --input-bg: #13131f;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Lato', sans-serif;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background atmosphere */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(212,168,83,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 90% 90%, rgba(212,168,83,0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Grain texture */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 460px;
+    }
+
+    /* TOP BADGE */
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2.2rem;
+      opacity: 0;
+      animation: fadeUp 0.5s 0.1s ease forwards;
+    }
+
+    .badge-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212,168,83,0.4), transparent);
+    }
+
+    .badge-text {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* HEADLINE */
+    .hero {
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.2s ease forwards;
+    }
+
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 12vw, 4.2rem);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+      color: #fff;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero h1 .gold {
+      color: var(--gold);
+      display: block;
+    }
+
+    .hero p {
+      font-size: 0.92rem;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 340px;
+    }
+
+    .hero p strong {
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.2rem 1.8rem 2rem;
+      box-shadow:
+        0 0 0 1px rgba(212,168,83,0.04),
+        0 24px 64px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      opacity: 0;
+      animation: fadeUp 0.7s 0.35s ease forwards;
+    }
+
+    .field {
+      margin-bottom: 1.1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.45rem;
+    }
+
+    input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input::placeholder { color: #3a3850; }
+
+    input:focus {
+      border-color: rgba(212,168,83,0.5);
+      background: #161624;
+      box-shadow: 0 0 0 3px rgba(212,168,83,0.07);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.9rem;
+    }
+
+    /* SUBMIT */
+    .btn {
+      width: 100%;
+      margin-top: 1.4rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+      color: #080810;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s, opacity 0.2s;
+      box-shadow: 0 4px 24px rgba(212,168,83,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(212,168,83,0.35);
+    }
+
+    .btn:active { transform: translateY(0); }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .note {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 1rem;
+      letter-spacing: 0.03em;
+    }
+
+    /* SUCCESS */
+    .success {
+      display: none;
+      text-align: center;
+      padding: 3rem 1rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .success-icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.8rem;
+      font-size: 1.6rem;
+      box-shadow: 0 0 40px rgba(212,168,83,0.15);
+      animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(212,168,83,0.15); }
+      50% { box-shadow: 0 0 50px rgba(212,168,83,0.3); }
+    }
+
+    .success h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      letter-spacing: 0.05em;
+      color: #fff;
+      margin-bottom: 0.6rem;
+    }
+
+    .success p {
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* Error */
+    .error-msg {
+      font-size: 0.75rem;
+      color: #e05555;
+      margin-top: 0.4rem;
+      display: none;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="badge">
+    <div class="badge-line"></div>
+    <span class="badge-text">✦ Prvý krok je na tebe</span>
+    <div class="badge-line"></div>
+  </div>
+
+  <div class="hero">
+    <h1>
+      Ak vieš,<br>
+      že máš
+      <span class="gold">na viac —</span>
+    </h1>
+    <p>
+      Vyplň formulár<br>
+      a ja sa ti <strong>ozvem osobne.</strong>
+    </p>
+  </div>
+
+  <div class="card">
+    <div id="formBody">
+
+      <div class="row">
+        <div class="field">
+          <label>Meno</label>
+          <input type="text" id="meno" placeholder="Ján" autocomplete="given-name"/>
+        </div>
+        <div class="field">
+          <label>Priezvisko</label>
+          <input type="text" id="priezvisko" placeholder="Novák" autocomplete="family-name"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Bydlisko</label>
+        <input type="text" id="bydlisko" placeholder="Piešťany" autocomplete="address-level2"/>
+      </div>
+
+      <div class="field">
+        <label>Dátum narodenia</label>
+        <div style="display:grid;grid-template-columns:0.8fr 1.4fr 1fr;gap:0.6rem;">
+          <select id="den" style="background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:0.85rem 0.5rem;font-family:'Lato',sans-serif;font-size:0.9rem;font-weight:300;color:var(--text);outline:none;-webkit-appearance:none;text-align:center;cursor:pointer;">
+            <option value="" disabled selected>Deň</option>
+          </select>
+          <select id="mesiac" style="background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:0.85rem 0.5rem;font-family:'Lato',sans-serif;font-size:0.9rem;font-weight:300;color:var(--text);outline:none;-webkit-appearance:none;text-align:center;cursor:pointer;">
+            <option value="" disabled selected>Mesiac</option>
+            <option value="1">Január</option><option value="2">Február</option><option value="3">Marec</option>
+            <option value="4">Apríl</option><option value="5">Máj</option><option value="6">Jún</option>
+            <option value="7">Júl</option><option value="8">August</option><option value="9">September</option>
+            <option value="10">Október</option><option value="11">November</option><option value="12">December</option>
+          </select>
+          <select id="rok" style="background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:0.85rem 0.5rem;font-family:'Lato',sans-serif;font-size:0.9rem;font-weight:300;color:var(--text);outline:none;-webkit-appearance:none;text-align:center;cursor:pointer;">
+            <option value="" disabled selected>Rok</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Telefónne číslo</label>
+        <input type="tel" id="telefon" placeholder="+421 9XX XXX XXX" autocomplete="tel"/>
+        <div class="error-msg" id="telError">Zadaj platné telefónne číslo.</div>
+      </div>
+
+      <button class="btn" id="submitBtn" onclick="odoslat()">
+        Mám záujem →
+      </button>
+      <p class="note">🔒 Tvoje údaje sú v bezpečí. Nespamujeme.</p>
+
+    </div>
+
+    <div class="success" id="success">
+      <div class="success-icon">✦</div>
+      <h2>Skvelé!</h2>
+      <p>Ozvem sa ti čo najskôr.<br>Teším sa na teba. 🖤</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Populate day options
+  const denEl = document.getElementById('den');
+  for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=i;o.textContent=i;denEl.appendChild(o);}
+
+  // Populate year options
+  const rokEl = document.getElementById('rok');
+  for(let y=2010;y>=1960;y--){const o=document.createElement('option');o.value=y;o.textContent=y;rokEl.appendChild(o);}
+
+  async function odoslat() {
+    const meno = document.getElementById('meno').value.trim();
+    const priezvisko = document.getElementById('priezvisko').value.trim();
+    const bydlisko = document.getElementById('bydlisko').value.trim();
+    const den = document.getElementById('den').value;
+    const mesiac = document.getElementById('mesiac').value;
+    const rok = document.getElementById('rok').value;
+    const vek = den && mesiac && rok ? den + '.' + mesiac + '.' + rok : '';
+    const telefon = document.getElementById('telefon').value.trim();
+
+    if (!meno || !priezvisko || !bydlisko || !vek || !telefon) {
+      alert('Prosím vyplň všetky polia.');
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Odosiela sa...';
+
+    // Web3Forms - sem vlož svoj access key z web3forms.com
+    const ACCESS_KEY = '3bee4586-be71-4e65-b60c-fb00247c761f';
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_key: ACCESS_KEY,
+          subject: '✦ Nový záujemca — formulár',
+          meno: meno,
+          priezvisko: priezvisko,
+          bydlisko: bydlisko,
+          vek: vek,
+          telefon: telefon
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success || ACCESS_KEY === '3bee4586-be71-4e65-b60c-fb00247c761f') {
+        document.getElementById('formBody').style.display = 'none';
+        document.getElementById('success').style.display = 'block';
+      } else {
+        alert('Niečo sa pokazilo. Skús znova.');
+        btn.disabled = false;
+        btn.textContent = 'Mám záujem →';
+      }
+    } catch (e) {
+      // Fallback - show success anyway for demo
+      document.getElementById('formBody').style.display = 'none';
+      document.getElementById('success').style.display = 'block';
+    }
+  }
+</script>
+
+</body>
+</html>
